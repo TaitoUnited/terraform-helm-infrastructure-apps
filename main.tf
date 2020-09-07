@@ -14,12 +14,6 @@
  * limitations under the License.
  */
 
-/* Provider */
-
-provider "helm" {
-  version = "~> 1.3.0"
-}
-
 locals {
   nginx_ingress_version      = "2.12.1"
   cert_manager_version       = "1.0.0-beta.0"
