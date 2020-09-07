@@ -1,6 +1,6 @@
 # Helm infrastructure apps for Kubernetes
 
-Provides some useful infrastructure applications for Kubernetes: [NGINX ingress](https://kubernetes.github.io/ingress-nginx/), [cert-manager](https://cert-manager.io/), [Falco](https://falco.org/), [Jaeger](https://www.jaegertracing.io/), [Sentry](https://sentry.io/welcome/), [Jenkins X](https://jenkins-x.io/), [Istio](https://istio.io/), [Knative](https://knative.dev/), and [Kafka](https://kafka.apache.org/)
+Provides some useful infrastructure applications for Kubernetes: [NGINX ingress](https://kubernetes.github.io/ingress-nginx/), [cert-manager](https://cert-manager.io/), [Falco](https://falco.org/), [Jaeger](https://www.jaegertracing.io/), [Sentry](https://sentry.io), [Jenkins X](https://jenkins-x.io/), [Istio](https://istio.io/), [Knative](https://knative.dev/), and [Kafka](https://kafka.apache.org/)
 
 NOTE: Currently only NGINX ingress and cert-manager has been implemented.
 
@@ -14,11 +14,10 @@ This module is used by the following modules:
 Example usage:
 
 ```
-module "my_zone" {
+module "helm_apps" {
   source                      = "TaitoUnited/infrastructure-apps/helm"
   version                     = "1.0.0"
 
-  config_context              = "my-kube"
   pod_security_policy_enabled = true
   nginxIngressLoadBalancerIPs = [ "123.123.123.1", "123.123.123.2", "123.123.123.3" ]
   email                       = "devops@mydomain.com"

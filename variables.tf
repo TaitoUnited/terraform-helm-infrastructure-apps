@@ -16,12 +16,6 @@
 
 # Resources as a json/yaml
 
-variable "config_context" {
-  type = string
-  default = ""
-  description = "(Optional) Context to choose from the config file."
-}
-
 variable "pod_security_policy_enabled" {
   type        = bool
   description = "True if pod security policy is enabled in Kubernetes cluster"

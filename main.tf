@@ -17,9 +17,6 @@
 /* Provider */
 
 provider "helm" {
-  kubernetes {
-    config_context = var.config_context
-  }
   version = "~> 1.3.0"
 }
 
