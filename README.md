@@ -1,6 +1,6 @@
 # Helm infrastructure apps for Kubernetes
 
-Provides some useful infrastructure applications for Kubernetes: [NGINX ingress](https://kubernetes.github.io/ingress-nginx/), [cert-manager](https://cert-manager.io/), [Falco](https://falco.org/), [Jaeger](https://www.jaegertracing.io/), [Sentry](https://sentry.io), [Jenkins X](https://jenkins-x.io/), [Istio](https://istio.io/), [Knative](https://knative.dev/), and [Kafka](https://kafka.apache.org/)
+Provides some useful infrastructure applications for Kubernetes: [NGINX ingress](https://kubernetes.github.io/ingress-nginx/), [cert-manager](https://cert-manager.io/), [Falco](https://falco.org/), [Jaeger](https://www.jaegertracing.io/), [Sentry](https://sentry.io), [Jenkins X](https://jenkins-x.io/), [Istio](https://istio.io/), and [Knative](https://knative.dev/).
 
 NOTE: Currently only NGINX ingress and cert-manager has been implemented.
 
@@ -74,10 +74,6 @@ sentry:
 
 # CI/CD
 jenkinsx:
-  enabled: false # NOTE: Not supported yet
-
-# Event handling
-kafka:
   enabled: false # NOTE: Not supported yet
 ```
 
