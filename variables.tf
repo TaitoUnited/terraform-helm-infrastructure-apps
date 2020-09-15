@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-# Resources as a json/yaml
-
 variable "pod_security_policy_enabled" {
   type        = bool
   description = "True if pod security policy is enabled in Kubernetes cluster"
@@ -33,6 +31,37 @@ variable "email" {
 }
 
 variable "resources" {
-  type        = any
+  type = object({
+    nginxIngressControllers = list(object({
+      class = string
+      replicas = number
+      metricsEnabled = bool
+      maxmindLicenseKey = string
+      configmap = map(string)
+      tcpServices = map(string)
+      udpServices = map(string)
+    }))
+    certManager = object({
+      enabled = bool
+    })
+    istio = object({
+      enabled = bool
+    })
+    knative = object({
+      enabled = bool
+    })
+    falco = object({
+      enabled = bool
+    })
+    jaeger = object({
+      enabled = bool
+    })
+    sentry = object({
+      enabled = bool
+    })
+    jenkinsx = object({
+      enabled = bool
+    })
+  })
   description = "Resources as JSON (see README.md). You can read values from a YAML file with yamldecode()."
 }
