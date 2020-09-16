@@ -116,9 +116,7 @@ resource "helm_release" "cert_manager_crd" {
 
   name       = "cert-manager-crd"
   namespace  = "cert-manager-crd"
-  repository = "https://taitounited.github.io/taito-charts/"
-  chart      = "cert-manager-crd"
-  version    = local.cert_manager_version
+  chart      = "${path.module}/cert-manager-crd"
 }
 
 resource "null_resource" "cert_manager_crd_wait" {

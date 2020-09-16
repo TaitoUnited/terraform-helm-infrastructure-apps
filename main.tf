@@ -16,7 +16,7 @@
 
 locals {
   nginx_ingress_version      = "2.12.1"
-  cert_manager_version       = "1.0.0-beta.0"
+  cert_manager_version       = "1.0.1"
 
   nginxIngressControllers = try(var.resources.nginxIngressControllers, [])
 
