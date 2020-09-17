@@ -16,12 +16,12 @@
 
 variable "nginx_ingress_version" {
   type        = string
-  value       = "2.12.1"
+  default     = "2.12.1"
 }
 
 variable "cert_manager_version" {
   type        = string
-  value       = "1.0.1"
+  default     = "1.0.1"
 }
 
 variable "pod_security_policy_enabled" {
