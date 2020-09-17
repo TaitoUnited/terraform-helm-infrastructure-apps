@@ -43,7 +43,7 @@ resource "helm_release" "ingress_nginx" {
 
   name       = local.ingressNginxControllers[count.index].name
   namespace  = local.ingressNginxControllers[count.index].name
-  repository = "https://kubernetes-charts.storage.googleapis.com/"
+  repository = "https://kubernetes.github.io/ingress-nginx"
   chart      = "ingress-nginx"
   version    = var.ingress_nginx_version
   wait       = false
