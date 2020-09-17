@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-variable "nginx_ingress_version" {
+variable "ingress_nginx_version" {
   type        = string
-  default     = "2.12.1"
+  default     = "3.1.0"
 }
 
 variable "cert_manager_version" {

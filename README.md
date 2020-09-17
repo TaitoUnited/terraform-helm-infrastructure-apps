@@ -31,7 +31,7 @@ Example YAML for resources:
 ```
 # Ingress controllers
 nginxIngressControllers:
-  - name: nginx-ingress
+  - name: ingress-nginx
     class: nginx
     replicas: 3
     metricsEnabled: true

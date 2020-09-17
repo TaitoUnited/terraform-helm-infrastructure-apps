@@ -37,15 +37,15 @@ resource "helm_release" "nginx_extras" {
   }
 }
 
-resource "helm_release" "nginx_ingress" {
+resource "helm_release" "ingress_nginx" {
   depends_on = [helm_release.nginx_extras]
   count      = length(local.nginxIngressControllers)
 
   name       = local.nginxIngressControllers[count.index].name
   namespace  = local.nginxIngressControllers[count.index].name
   repository = "https://kubernetes-charts.storage.googleapis.com/"
-  chart      = "nginx-ingress"
-  version    = var.nginx_ingress_version
+  chart      = "ingress-nginx"
+  version    = var.ingress_nginx_version
   wait       = false
 
   set {
@@ -140,7 +140,7 @@ resource "helm_release" "nginx_ingress" {
 }
 
 resource "helm_release" "cert_manager_crd" {
-  depends_on = [helm_release.nginx_ingress]
+  depends_on = [helm_release.ingress_nginx]
 
   count      = local.certManager.enabled ? 1 : 0
 
