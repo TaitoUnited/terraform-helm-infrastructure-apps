@@ -14,6 +14,16 @@
  * limitations under the License.
  */
 
+variable "nginx_ingress_version" {
+  type        = string
+  value       = "2.12.1"
+}
+
+variable "cert_manager_version" {
+  type        = string
+  value       = "1.0.1"
+}
+
 variable "pod_security_policy_enabled" {
   type        = bool
   description = "True if pod security policy is enabled in Kubernetes cluster"

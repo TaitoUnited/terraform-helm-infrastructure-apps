@@ -45,7 +45,7 @@ resource "helm_release" "nginx_ingress" {
   namespace  = local.nginxIngressControllers[count.index].name
   repository = "https://kubernetes-charts.storage.googleapis.com/"
   chart      = "nginx-ingress"
-  version    = local.nginx_ingress_version
+  version    = var.nginx_ingress_version
   wait       = false
 
   set {
@@ -154,7 +154,7 @@ resource "null_resource" "cert_manager_crd_wait" {
 
   triggers = {
     cert_manager_enabled = local.certManager.enabled
-    cert_manager_version = local.cert_manager_version
+    cert_manager_version = var.cert_manager_version
   }
 
   provisioner "local-exec" {
@@ -171,7 +171,7 @@ resource "helm_release" "cert_manager" {
   namespace  = "cert-manager"
   repository = "https://charts.jetstack.io/"
   chart      = "cert-manager"
-  version    = local.cert_manager_version
+  version    = var.cert_manager_version
 
   set {
     name     = "global.rbac.create"
