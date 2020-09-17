@@ -47,7 +47,7 @@ ingressNginxControllers:
       # Hardening
       # See https://kubernetes.github.io/ingress-nginx/deploy/hardening-guide/
       keep-alive: 10
-      # TODO: Ensure default error and index.html pages do not reference NGINX
+      custom-http-errors: 403,404,503,500
       server-snippet: >
         location ~ /\.(?!well-known).* {
           deny all;
