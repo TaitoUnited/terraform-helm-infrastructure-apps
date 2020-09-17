@@ -29,7 +29,7 @@ variable "pod_security_policy_enabled" {
   description = "True if pod security policy is enabled in Kubernetes cluster"
 }
 
-variable "nginxIngressLoadBalancerIPs" {
+variable "ingressNginxLoadBalancerIPs" {
   type        = list(string)
   default     = []
   description = "(Optional) NGINX ingress load balancer IP addresses"
@@ -42,7 +42,7 @@ variable "email" {
 
 variable "resources" {
   type = object({
-    nginxIngressControllers = list(object({
+    ingressNginxControllers = list(object({
       class = string
       replicas = number
       metricsEnabled = bool

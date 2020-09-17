@@ -15,7 +15,7 @@
  */
 
 data "external" "dhparam" {
-  count   = length(local.nginxIngressControllers)
+  count   = length(local.ingressNginxControllers)
   program = [
     "sh",
     "-c",
@@ -24,10 +24,10 @@ data "external" "dhparam" {
 }
 
 resource "helm_release" "nginx_extras" {
-  count      = length(local.nginxIngressControllers)
+  count      = length(local.ingressNginxControllers)
 
-  name       = local.nginxIngressControllers[count.index].name
-  namespace  = local.nginxIngressControllers[count.index].name
+  name       = local.ingressNginxControllers[count.index].name
+  namespace  = local.ingressNginxControllers[count.index].name
   chart      = "${path.module}/nginx-extras"
 
   set {
@@ -39,10 +39,10 @@ resource "helm_release" "nginx_extras" {
 
 resource "helm_release" "ingress_nginx" {
   depends_on = [helm_release.nginx_extras]
-  count      = length(local.nginxIngressControllers)
+  count      = length(local.ingressNginxControllers)
 
-  name       = local.nginxIngressControllers[count.index].name
-  namespace  = local.nginxIngressControllers[count.index].name
+  name       = local.ingressNginxControllers[count.index].name
+  namespace  = local.ingressNginxControllers[count.index].name
   repository = "https://kubernetes-charts.storage.googleapis.com/"
   chart      = "ingress-nginx"
   version    = var.ingress_nginx_version
@@ -65,23 +65,23 @@ resource "helm_release" "ingress_nginx" {
 
   set {
     name     = "controller.ingressClass"
-    value    = local.nginxIngressControllers[count.index].class
+    value    = local.ingressNginxControllers[count.index].class
   }
 
   set {
     name     = "controller.replicaCount"
-    value    = local.nginxIngressControllers[count.index].replicas
+    value    = local.ingressNginxControllers[count.index].replicas
   }
 
   set {
     name     = "controller.maxmindLicenseKey"
-    value    = local.nginxIngressControllers[count.index].maxmindLicenseKey
+    value    = local.ingressNginxControllers[count.index].maxmindLicenseKey
   }
 
   set {
     name     = "controller.service.loadBalancerIP"
     type     = "string"
-    value    = length(var.nginxIngressLoadBalancerIPs) > 0 ? var.nginxIngressLoadBalancerIPs[count.index] : ""
+    value    = length(var.ingressNginxLoadBalancerIPs) > 0 ? var.ingressNginxLoadBalancerIPs[count.index] : ""
   }
 
   set {
@@ -92,13 +92,13 @@ resource "helm_release" "ingress_nginx" {
   set {
     name     = "controller.metrics.enabled"
     type     = "string"
-    value    = local.nginxIngressControllers[count.index].metricsEnabled
+    value    = local.ingressNginxControllers[count.index].metricsEnabled
   }
 
   set {
     name     = "controller.config.ssl-dh-param"
     type     = "string"
-    value    = "${local.nginxIngressControllers[count.index].name}/lb-dhparam"
+    value    = "${local.ingressNginxControllers[count.index].name}/lb-dhparam"
   }
 
   set {
@@ -114,7 +114,7 @@ resource "helm_release" "ingress_nginx" {
   }
 
   dynamic "set" {
-    for_each = local.nginxIngressControllers[count.index].configMap
+    for_each = local.ingressNginxControllers[count.index].configMap
     content {
       name   = "controller.config." + set.key
       type   = "string"
@@ -123,7 +123,7 @@ resource "helm_release" "ingress_nginx" {
   }
 
   dynamic "set" {
-    for_each = local.nginxIngressControllers[count.index].tcpServices
+    for_each = local.ingressNginxControllers[count.index].tcpServices
     content {
       name   = "tcp." + set.key
       value  = set.value
@@ -131,7 +131,7 @@ resource "helm_release" "ingress_nginx" {
   }
 
   dynamic "set" {
-    for_each = local.nginxIngressControllers[count.index].udpServices
+    for_each = local.ingressNginxControllers[count.index].udpServices
     content {
       name   = "udp." + set.key
       value  = set.value

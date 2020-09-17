@@ -15,7 +15,7 @@
  */
 
 locals {
-  nginxIngressControllers = try(var.resources.nginxIngressControllers, [])
+  ingressNginxControllers = try(var.resources.ingressNginxControllers, [])
 
   certManager = try(var.resources.certManager, { enabled = false })
 }

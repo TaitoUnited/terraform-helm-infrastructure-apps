@@ -19,7 +19,7 @@ module "helm_apps" {
   version                     = "1.0.0"
 
   pod_security_policy_enabled = true
-  nginxIngressLoadBalancerIPs = [ "123.123.123.1", "123.123.123.2", "123.123.123.3" ]
+  ingressNginxLoadBalancerIPs = [ "123.123.123.1", "123.123.123.2", "123.123.123.3" ]
   email                       = "devops@mydomain.com"
 
   resources                   = yamldecode(file("${path.root}/../my-kube.yaml"))
@@ -30,7 +30,7 @@ Example YAML for resources:
 
 ```
 # Ingress controllers
-nginxIngressControllers:
+ingressNginxControllers:
   - name: ingress-nginx
     class: nginx
     replicas: 3
