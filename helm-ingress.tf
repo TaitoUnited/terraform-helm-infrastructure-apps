@@ -14,11 +14,35 @@
  * limitations under the License.
  */
 
-resource "helm_release" "nginx_ingress" {
+data "external" "dhparam" {
+  count   = length(local.nginxIngressControllers)
+  program = [
+    "sh",
+    "-c",
+    "jq -n --arg key \"$(openssl dhparam 4096 2> /dev/null | base64)\""
+  ]
+}
+
+resource "helm_release" "nginx_extras" {
   count      = length(local.nginxIngressControllers)
 
-  name       = "nginx-ingress"
-  namespace  = "nginx-ingress"
+  name       = local.nginxIngressControllers[count.index].name
+  namespace  = local.nginxIngressControllers[count.index].name
+  chart      = "${path.module}/nginx-extras"
+
+  set {
+    name     = "dhparam"
+    type     = "string"
+    value    = data.external.dhparam[count.index].result.key
+  }
+}
+
+resource "helm_release" "nginx_ingress" {
+  depends_on = [helm_release.nginx_extras]
+  count      = length(local.nginxIngressControllers)
+
+  name       = local.nginxIngressControllers[count.index].name
+  namespace  = local.nginxIngressControllers[count.index].name
   repository = "https://kubernetes-charts.storage.googleapis.com/"
   chart      = "nginx-ingress"
   version    = local.nginx_ingress_version
@@ -69,6 +93,12 @@ resource "helm_release" "nginx_ingress" {
     name     = "controller.metrics.enabled"
     type     = "string"
     value    = local.nginxIngressControllers[count.index].metricsEnabled
+  }
+
+  set {
+    name     = "controller.config.ssl-dh-param"
+    type     = "string"
+    value    = "${local.nginxIngressControllers[count.index].name}/lb-dhparam"
   }
 
   set {

@@ -31,28 +31,50 @@ Example YAML for resources:
 ```
 # Ingress controllers
 nginxIngressControllers:
-  - class: nginx
+  - name: nginx-ingress
+    class: nginx
     replicas: 3
     metricsEnabled: true
-    maxmindLicenseKey: # For GeoIP
-    # See https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/configmap/
-    configMap:
-      enable-modsecurity: true
-      enable-owasp-modsecurity-crs: true
-      use-geoip: false
-      use-geoip2: true
-      enable-real-ip: false
-      enable-opentracing: false
-      whitelist-source-range:
-      # Block malicious IPs. See https://www.projecthoneypot.org/list_of_ips.php
-      block-cidrs:
-      block-user-agents:
-      block-referers:
+    # MaxMind license key for GeoIP2: https://support.maxmind.com/account-faq/license-keys/how-do-i-generate-a-license-key/
+    maxmindLicenseKey:
     # Map TCP/UDP connections to services
     tcpServices:
       3000: my-namespace/my-tcp-service:9000
     udpServices:
       3001: my-namespace/my-udp-service:9001
+    # See https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/configmap/
+    configMap:
+      # Hardening
+      # See https://kubernetes.github.io/ingress-nginx/deploy/hardening-guide/
+      keep-alive: 10
+      # TODO: Ensure default error and index.html pages do not reference NGINX
+      server-snippet: >
+        location ~ /\.(?!well-known).* {
+          deny all;
+          access_log off;
+          log_not_found off;
+          return 404;
+        }
+      hide-headers: Server,X-Powered-By
+      ssl-ciphers: EECDH+AESGCM:EDH+AESGCM
+      enable-ocsp: true
+      hsts-preload: true
+      ssl-session-tickets: false
+      client-header-timeout: 10
+      client-body-timeout: 10
+      large-client-header-buffers: 2 1k
+      client-body-buffer-size: 1k
+      proxy-body-size: 1k
+      # Firewall and access control
+      enable-modsecurity: true
+      enable-owasp-modsecurity-crs: true
+      use-geoip: false
+      use-geoip2: true
+      enable-real-ip: false
+      whitelist-source-range:
+      block-cidrs:
+      block-user-agents:
+      block-referers:
 
 # Certificate managers
 certManager:
