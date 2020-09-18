@@ -14,27 +14,7 @@
  * limitations under the License.
  */
 
-data "external" "dhparam" {
-  count   = length(local.ingressNginxControllers)
-  program = [ "${path.module}/dhparam.sh" ]
-}
-
-resource "helm_release" "nginx_extras" {
-  count      = length(local.ingressNginxControllers)
-
-  name       = local.ingressNginxControllers[count.index].name
-  namespace  = local.ingressNginxControllers[count.index].name
-  chart      = "${path.module}/nginx-extras"
-
-  set {
-    name     = "dhparam"
-    type     = "string"
-    value    = data.external.dhparam[count.index].result.key
-  }
-}
-
 resource "helm_release" "ingress_nginx" {
-  depends_on = [helm_release.nginx_extras]
   count      = length(local.ingressNginxControllers)
 
   name       = local.ingressNginxControllers[count.index].name
@@ -105,8 +85,7 @@ resource "helm_release" "ingress_nginx" {
 
   set {
     name     = "controller.config.log-format-upstream"
-    type     = "string"
-    value    = "{\"timestamp\": \"$time_iso8601\", \"requestId\": \"$req_id\", \"proxyUpstreamName\": \"$proxy_upstream_name\", \"proxyAlternativeUpstreamName\": \"$proxy_alternative_upstream_name\", \"upstreamStatus\": \"$upstream_status\", \"upstreamAddr\": \"$upstream_addr\", \"httpRequest\":{ \"requestMethod\": \"$request_method\", \"requestUrl\": \"$host$request_uri\", \"status\": $status, \"requestSize\": \"$request_length\", \"responseSize\": \"$upstream_response_length\", \"userAgent\": \"$http_user_agent\", \"remoteIp\": \"$remote_addr\", \"referer\": \"$http_referer\", \"responseTimeS\": \"$upstream_response_time\", \"protocol\":\"$server_protocol\"}}"
+    value    = "{\"timestamp\": \"$$time_iso8601\", \"requestId\": \"$$req_id\", \"proxyUpstreamName\": \"$$proxy_upstream_name\", \"proxyAlternativeUpstreamName\": \"$$proxy_alternative_upstream_name\", \"upstreamStatus\": \"$$upstream_status\", \"upstreamAddr\": \"$$upstream_addr\", \"httpRequest\":{ \"requestMethod\": \"$$request_method\", \"requestUrl\": \"$$host$$request_uri\", \"status\": $$status, \"requestSize\": \"$$request_length\", \"responseSize\": \"$$upstream_response_length\", \"userAgent\": \"$$http_user_agent\", \"remoteIp\": \"$$remote_addr\", \"referer\": \"$$http_referer\", \"responseTimeS\": \"$$upstream_response_time\", \"protocol\":\"$$server_protocol\"}}"
   }
 
   dynamic "set" {
@@ -132,6 +111,26 @@ resource "helm_release" "ingress_nginx" {
       name   = "udp.${set.key}"
       value  = set.value
     }
+  }
+}
+
+data "external" "dhparam" {
+  count   = length(local.ingressNginxControllers)
+  program = [ "${path.module}/dhparam.sh" ]
+}
+
+resource "helm_release" "nginx_extras" {
+  depends_on = [helm_release.ingress_nginx]
+  count      = length(local.ingressNginxControllers)
+
+  name       = local.ingressNginxControllers[count.index].name
+  namespace  = local.ingressNginxControllers[count.index].name
+  chart      = "${path.module}/nginx-extras"
+
+  set_sensitive {
+    name     = "dhparam"
+    type     = "string"
+    value    = data.external.dhparam[count.index].result.key
   }
 }
 
