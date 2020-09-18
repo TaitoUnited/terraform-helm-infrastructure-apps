@@ -114,26 +114,26 @@ resource "helm_release" "ingress_nginx" {
   }
 
   dynamic "set" {
-    for_each = local.ingressNginxControllers[count.index].configMap
+    for_each = local.ingressNginxControllers[count.index].configMap != null ? local.ingressNginxControllers[count.index].configMap : {}
     content {
-      name   = "controller.config." + set.key
+      name   = "controller.config.${set.key}"
       type   = "string"
       value  = set.value
     }
   }
 
   dynamic "set" {
-    for_each = local.ingressNginxControllers[count.index].tcpServices
+    for_each = local.ingressNginxControllers[count.index].tcpServices != null ? local.ingressNginxControllers[count.index].tcpServices : {}
     content {
-      name   = "tcp." + set.key
+      name   = "tcp.${set.key}"
       value  = set.value
     }
   }
 
   dynamic "set" {
-    for_each = local.ingressNginxControllers[count.index].udpServices
+    for_each = local.ingressNginxControllers[count.index].udpServices != null ? local.ingressNginxControllers[count.index].udpServices : {}
     content {
-      name   = "udp." + set.key
+      name   = "udp.${set.key}"
       value  = set.value
     }
   }

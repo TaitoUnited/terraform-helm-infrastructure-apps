@@ -43,11 +43,12 @@ variable "email" {
 variable "resources" {
   type = object({
     ingressNginxControllers = list(object({
+      name = string
       class = string
       replicas = number
       metricsEnabled = bool
       maxmindLicenseKey = string
-      configmap = map(string)
+      configMap = map(string)
       tcpServices = map(string)
       udpServices = map(string)
     }))
