@@ -16,11 +16,7 @@
 
 data "external" "dhparam" {
   count   = length(local.ingressNginxControllers)
-  program = [
-    "sh",
-    "-c",
-    "jq -n --arg key \"$(openssl dhparam 4096 2> /dev/null | base64)\""
-  ]
+  program = [ "${path.module}/dhparam.sh" ]
 }
 
 resource "helm_release" "nginx_extras" {
