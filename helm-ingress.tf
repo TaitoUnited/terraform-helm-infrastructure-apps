@@ -14,7 +14,28 @@
  * limitations under the License.
  */
 
+data "external" "dhparam" {
+  count   = length(local.ingressNginxControllers)
+  program = [ "${path.module}/dhparam.sh", "${count.index}", "${path.module}" ]
+}
+
+resource "helm_release" "nginx_extras" {
+  count      = length(local.ingressNginxControllers)
+
+  name       = local.ingressNginxControllers[count.index].name
+  namespace  = local.ingressNginxControllers[count.index].name
+  chart      = "${path.module}/nginx-extras"
+  create_namespace = true
+
+  set_sensitive {
+    name     = "dhparam"
+    type     = "string"
+    value    = data.external.dhparam[count.index].result.key
+  }
+}
+
 resource "helm_release" "ingress_nginx" {
+  depends_on = [helm_release.nginx_extras]
   count      = length(local.ingressNginxControllers)
 
   name       = local.ingressNginxControllers[count.index].name
@@ -23,6 +44,10 @@ resource "helm_release" "ingress_nginx" {
   chart      = "ingress-nginx"
   version    = var.ingress_nginx_version
   wait       = false
+
+  values = [
+    file("${path.module}/helm-ingress.yaml")
+  ]
 
   set {
     name     = "podSecurityPolicy.enabled"
@@ -83,17 +108,13 @@ resource "helm_release" "ingress_nginx" {
     value    = "true"
   }
 
-  set {
-    name     = "controller.config.log-format-upstream"
-    value    = "{\"timestamp\": \"$$time_iso8601\", \"requestId\": \"$$req_id\", \"proxyUpstreamName\": \"$$proxy_upstream_name\", \"proxyAlternativeUpstreamName\": \"$$proxy_alternative_upstream_name\", \"upstreamStatus\": \"$$upstream_status\", \"upstreamAddr\": \"$$upstream_addr\", \"httpRequest\":{ \"requestMethod\": \"$$request_method\", \"requestUrl\": \"$$host$$request_uri\", \"status\": $$status, \"requestSize\": \"$$request_length\", \"responseSize\": \"$$upstream_response_length\", \"userAgent\": \"$$http_user_agent\", \"remoteIp\": \"$$remote_addr\", \"referer\": \"$$http_referer\", \"responseTimeS\": \"$$upstream_response_time\", \"protocol\":\"$$server_protocol\"}}"
-  }
-
   dynamic "set" {
     for_each = local.ingressNginxControllers[count.index].configMap != null ? local.ingressNginxControllers[count.index].configMap : {}
     content {
       name   = "controller.config.${set.key}"
       type   = "string"
-      value  = set.value
+      # https://github.com/hashicorp/terraform-provider-helm/issues/330#issuecomment-544706935
+      value  = replace(set.value, ",", "\\,")
     }
   }
 
@@ -114,34 +135,15 @@ resource "helm_release" "ingress_nginx" {
   }
 }
 
-data "external" "dhparam" {
-  count   = length(local.ingressNginxControllers)
-  program = [ "${path.module}/dhparam.sh" ]
-}
-
-resource "helm_release" "nginx_extras" {
-  depends_on = [helm_release.ingress_nginx]
-  count      = length(local.ingressNginxControllers)
-
-  name       = local.ingressNginxControllers[count.index].name
-  namespace  = local.ingressNginxControllers[count.index].name
-  chart      = "${path.module}/nginx-extras"
-
-  set_sensitive {
-    name     = "dhparam"
-    type     = "string"
-    value    = data.external.dhparam[count.index].result.key
-  }
-}
-
 resource "helm_release" "cert_manager_crd" {
   depends_on = [helm_release.ingress_nginx]
 
   count      = local.certManager.enabled ? 1 : 0
 
-  name       = "cert-manager-crd"
-  namespace  = "cert-manager-crd"
+  name       = "cert-manager"
+  namespace  = "cert-manager"
   chart      = "${path.module}/cert-manager-crd"
+  create_namespace = true
 }
 
 resource "null_resource" "cert_manager_crd_wait" {
