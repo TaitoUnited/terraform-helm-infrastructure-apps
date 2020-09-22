@@ -22,7 +22,7 @@ data "external" "dhparam" {
 resource "helm_release" "nginx_extras" {
   count      = length(local.ingressNginxControllers)
 
-  name       = local.ingressNginxControllers[count.index].name
+  name       = "${local.ingressNginxControllers[count.index].name}-extras"
   namespace  = local.ingressNginxControllers[count.index].name
   chart      = "${path.module}/nginx-extras"
   create_namespace = true
@@ -135,7 +135,7 @@ resource "helm_release" "cert_manager_crd" {
 
   count      = local.certManager.enabled ? 1 : 0
 
-  name       = "cert-manager"
+  name       = "cert-manager-crd"
   namespace  = "cert-manager"
   chart      = "${path.module}/cert-manager-crd"
   create_namespace = true
