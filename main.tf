@@ -17,5 +17,10 @@
 locals {
   ingressNginxControllers = try(var.resources.ingressNginxControllers, [])
 
+  ingressNginxConfigMaps = [
+    for nginx in local.ingressNginxControllers:
+    nginx.configMap != null ? nginx.configMap : {}
+  ]
+
   certManager = try(var.resources.certManager, { enabled = false })
 }

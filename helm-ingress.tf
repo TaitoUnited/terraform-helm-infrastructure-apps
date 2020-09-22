@@ -46,7 +46,12 @@ resource "helm_release" "ingress_nginx" {
   wait       = false
 
   values = [
-    file("${path.module}/helm-ingress.yaml")
+    file("${path.module}/helm-ingress.yaml"),
+    jsonencode({
+      controller = {
+        config = local.ingressNginxConfigMaps[count.index]
+      }
+    })
   ]
 
   set {
@@ -106,16 +111,6 @@ resource "helm_release" "ingress_nginx" {
     name     = "controller.config.log-format-escape-json"
     type     = "string"
     value    = "true"
-  }
-
-  dynamic "set" {
-    for_each = local.ingressNginxControllers[count.index].configMap != null ? local.ingressNginxControllers[count.index].configMap : {}
-    content {
-      name   = "controller.config.${set.key}"
-      type   = "string"
-      # https://github.com/hashicorp/terraform-provider-helm/issues/330#issuecomment-544706935
-      value  = replace(set.value, ",", "\\,")
-    }
   }
 
   dynamic "set" {
