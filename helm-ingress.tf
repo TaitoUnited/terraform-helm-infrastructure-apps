@@ -31,16 +31,6 @@ resource "helm_release" "nginx_extras" {
   chart      = "${path.module}/nginx-extras"
   create_namespace = true
 
-  set_sensitive {
-    name     = "dhparam"
-    type     = "string"
-    value    = (
-      var.generate_ingress_dhparam == true
-      ? data.external.dhparam[count.index].result.key
-      : null
-    )
-  }
-
   dynamic "set_sensitive" {
     for_each = var.generate_ingress_dhparam == true ? [ 1 ] : []
     content {
