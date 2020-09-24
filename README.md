@@ -15,14 +15,17 @@ Example usage:
 
 ```
 module "helm_apps" {
-  source                      = "TaitoUnited/infrastructure-apps/helm"
-  version                     = "1.0.0"
+  source                         = "TaitoUnited/infrastructure-apps/helm"
+  version                        = "1.0.0"
 
-  pod_security_policy_enabled = true
-  ingressNginxLoadBalancerIPs = [ "123.123.123.1", "123.123.123.2", "123.123.123.3" ]
-  email                       = "devops@mydomain.com"
+  generate_ingress_nginx_dhparam = false
+  pod_security_policy_enabled    = true
+  ingressNginxLoadBalancerIPs    = [
+    "123.123.123.1", "123.123.123.2", "123.123.123.3"
+  ]
+  email                          = "devops@mydomain.com"
 
-  resources                   = yamldecode(file("${path.root}/../my-kube.yaml"))
+  resources                      = yamldecode(file("${path.root}/../my-kube.yaml"))
 }
 ```
 

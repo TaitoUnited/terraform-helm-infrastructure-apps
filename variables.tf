@@ -24,6 +24,11 @@ variable "cert_manager_version" {
   default     = "1.0.1"
 }
 
+variable "generate_ingress_nginx_dhparam" {
+  type        = bool
+  description = "Generate Diffie-Hellman key for ingress-nginx"
+}
+
 variable "pod_security_policy_enabled" {
   type        = bool
   description = "True if pod security policy is enabled in Kubernetes cluster"

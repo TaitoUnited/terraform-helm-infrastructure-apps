@@ -15,7 +15,11 @@
  */
 
 data "external" "dhparam" {
-  count   = length(local.ingressNginxControllers)
+  count   = (
+    var.generate_ingress_nginx_dhparam == true
+    ? length(local.ingressNginxControllers)
+    : 0
+  )
   program = [ "${path.module}/dhparam.sh", "${count.index}", "${path.module}" ]
 }
 
@@ -30,7 +34,11 @@ resource "helm_release" "nginx_extras" {
   set_sensitive {
     name     = "dhparam"
     type     = "string"
-    value    = data.external.dhparam[count.index].result.key
+    value    = (
+      var.generate_ingress_nginx_dhparam == true
+      ? data.external.dhparam[count.index].result.key
+      : null
+    )
   }
 }
 
@@ -102,15 +110,18 @@ resource "helm_release" "ingress_nginx" {
   }
 
   set {
-    name     = "controller.config.ssl-dh-param"
-    type     = "string"
-    value    = "${local.ingressNginxControllers[count.index].name}/lb-dhparam"
-  }
-
-  set {
     name     = "controller.config.log-format-escape-json"
     type     = "string"
     value    = "true"
+  }
+
+  dynamic "set" {
+    for_each = var.generate_ingress_nginx_dhparam == true ? [ 1 ] : []
+    content {
+      name     = "controller.config.ssl-dh-param"
+      type     = "string"
+      value    = "${local.ingressNginxControllers[count.index].name}/lb-dhparam"
+    }
   }
 
   dynamic "set" {
