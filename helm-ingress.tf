@@ -40,6 +40,15 @@ resource "helm_release" "nginx_extras" {
       : null
     )
   }
+
+  dynamic "set_sensitive" {
+    for_each = var.generate_ingress_dhparam == true ? [ 1 ] : []
+    content {
+      name     = "dhparam"
+      type     = "string"
+      value    = data.external.dhparam[count.index].result.key
+    }
+  }
 }
 
 resource "helm_release" "ingress_nginx" {
