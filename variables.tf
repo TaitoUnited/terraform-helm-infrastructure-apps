@@ -24,9 +24,9 @@ variable "cert_manager_version" {
   default     = "1.0.1"
 }
 
-variable "generate_ingress_nginx_dhparam" {
+variable "generate_ingress_dhparam" {
   type        = bool
-  description = "Generate Diffie-Hellman key for ingress-nginx"
+  description = "Generate Diffie-Hellman key for ingress"
 }
 
 variable "pod_security_policy_enabled" {
