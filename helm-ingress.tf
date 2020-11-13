@@ -15,19 +15,15 @@
  */
 
 data "external" "dhparam" {
-  count   = (
-    var.generate_ingress_dhparam == true
-    ? length(local.ingressNginxControllers)
-    : 0
-  )
-  program = [ "${path.module}/dhparam.sh", "${count.index}", "${path.module}" ]
+  for_each = {for item in (var.generate_ingress_dhparam == true ? local.ingressNginxControllers : []): item.name => item}
+  program = [ "${path.module}/dhparam.sh", "${each.key}", "${path.module}" ]
 }
 
 resource "helm_release" "nginx_extras" {
-  count      = length(local.ingressNginxControllers)
+  for_each   = {for item in local.ingressNginxControllers: item.name => item}
 
-  name       = "${local.ingressNginxControllers[count.index].name}-extras"
-  namespace  = local.ingressNginxControllers[count.index].name
+  name       = "${each.value.name}-extras"
+  namespace  = each.value.name
   chart      = "${path.module}/nginx-extras"
   create_namespace = true
 
@@ -36,17 +32,17 @@ resource "helm_release" "nginx_extras" {
     content {
       name     = "dhparam"
       type     = "string"
-      value    = data.external.dhparam[count.index].result.key
+      value    = data.external.dhparam[each.key].result.key
     }
   }
 }
 
 resource "helm_release" "ingress_nginx" {
   depends_on = [helm_release.nginx_extras]
-  count      = length(local.ingressNginxControllers)
+  for_each   = {for item in local.ingressNginxControllers: item.name => item}
 
-  name       = local.ingressNginxControllers[count.index].name
-  namespace  = local.ingressNginxControllers[count.index].name
+  name       = each.value.name
+  namespace  = each.value.name
   repository = "https://kubernetes.github.io/ingress-nginx"
   chart      = "ingress-nginx"
   version    = var.ingress_nginx_version
@@ -56,7 +52,7 @@ resource "helm_release" "ingress_nginx" {
     file("${path.module}/helm-ingress.yaml"),
     jsonencode({
       controller = {
-        config = local.ingressNginxConfigMaps[count.index]
+        config = local.ingressNginxConfigMaps[each.key]
       }
     })
   ]
@@ -78,23 +74,23 @@ resource "helm_release" "ingress_nginx" {
 
   set {
     name     = "controller.ingressClass"
-    value    = local.ingressNginxControllers[count.index].class
+    value    = each.value.class
   }
 
   set {
     name     = "controller.replicaCount"
-    value    = local.ingressNginxControllers[count.index].replicas
+    value    = each.value.replicas
   }
 
   set {
     name     = "controller.maxmindLicenseKey"
-    value    = local.ingressNginxControllers[count.index].maxmindLicenseKey
+    value    = each.value.maxmindLicenseKey
   }
 
   set {
     name     = "controller.service.loadBalancerIP"
     type     = "string"
-    value    = length(var.ingressNginxLoadBalancerIPs) > 0 ? var.ingressNginxLoadBalancerIPs[count.index] : ""
+    value    = length(var.ingressNginxLoadBalancerIPs) > 0 ? var.ingressNginxLoadBalancerIPs[each.key] : ""
   }
 
   set {
@@ -105,7 +101,7 @@ resource "helm_release" "ingress_nginx" {
   set {
     name     = "controller.metrics.enabled"
     type     = "string"
-    value    = local.ingressNginxControllers[count.index].metricsEnabled
+    value    = each.value.metricsEnabled
   }
 
   set {
@@ -119,12 +115,12 @@ resource "helm_release" "ingress_nginx" {
     content {
       name     = "controller.config.ssl-dh-param"
       type     = "string"
-      value    = "${local.ingressNginxControllers[count.index].name}/lb-dhparam"
+      value    = "${each.value.name}/lb-dhparam"
     }
   }
 
   dynamic "set" {
-    for_each = local.ingressNginxControllers[count.index].tcpServices != null ? local.ingressNginxControllers[count.index].tcpServices : {}
+    for_each = each.value.tcpServices != null ? each.value.tcpServices : {}
     content {
       name   = "tcp.${set.key}"
       value  = set.value
@@ -132,7 +128,7 @@ resource "helm_release" "ingress_nginx" {
   }
 
   dynamic "set" {
-    for_each = local.ingressNginxControllers[count.index].udpServices != null ? local.ingressNginxControllers[count.index].udpServices : {}
+    for_each = each.value.udpServices != null ? each.value.udpServices : {}
     content {
       name   = "udp.${set.key}"
       value  = set.value
