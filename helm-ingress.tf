@@ -16,7 +16,7 @@
 
 data "external" "dhparam" {
   for_each = {for item in (var.generate_ingress_dhparam == true ? local.ingressNginxControllers : []): item.name => item}
-  program = [ "${path.module}/dhparam.sh", "${each.key}", "${path.module}" ]
+  program = [ "${path.module}/dhparam.sh", each.key, path.module ]
 }
 
 resource "helm_release" "nginx_extras" {
