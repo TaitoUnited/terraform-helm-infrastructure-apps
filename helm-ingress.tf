@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 Taito United
+ * Copyright 2021 Taito United
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -84,7 +84,7 @@ resource "helm_release" "ingress_nginx" {
 
   set {
     name     = "controller.maxmindLicenseKey"
-    value    = each.value.maxmindLicenseKey
+    value    = each.value.maxmindLicenseKey != null ? each.value.maxmindLicenseKey : ""
   }
 
   set {
@@ -101,7 +101,7 @@ resource "helm_release" "ingress_nginx" {
   set {
     name     = "controller.metrics.enabled"
     type     = "string"
-    value    = each.value.metricsEnabled
+    value    = each.value.metricsEnabled != null ? each.value.metricsEnabled : false
   }
 
   set {

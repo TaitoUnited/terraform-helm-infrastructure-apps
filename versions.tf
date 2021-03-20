@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 Taito United
+ * Copyright 2021 Taito United
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,13 +15,16 @@
  */
 
 terraform {
-  required_version = ">= 0.13"
+  experiments = [module_variable_optional_attrs]
+
+  required_version = ">= 0.14"
   required_providers {
     external = {
       source = "hashicorp/external"
     }
     helm = {
       source = "hashicorp/helm"
+      version = "=2.0.3"
     }
     null = {
       source = "hashicorp/null"
