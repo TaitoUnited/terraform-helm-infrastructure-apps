@@ -82,24 +82,6 @@ ingressNginxControllers:
 # Certificate managers
 certManager:
   enabled: false
-
-# Platforms
-istio:
-  enabled: false
-knative:
-  enabled: false
-
-# Logging, monitoring, and tracing
-falco:
-  enabled: false # NOTE: Not supported yet
-jaeger:
-  enabled: false # NOTE: Not supported yet
-sentry:
-  enabled: false # NOTE: Not supported yet
-
-# CI/CD
-jenkinsx:
-  enabled: false # NOTE: Not supported yet
 ```
 
 Contributions are welcome!

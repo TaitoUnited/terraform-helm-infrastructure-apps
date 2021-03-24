@@ -60,24 +60,6 @@ variable "resources" {
     certManager = object({
       enabled = bool
     })
-    istio = object({
-      enabled = bool
-    })
-    knative = object({
-      enabled = bool
-    })
-    falco = object({
-      enabled = bool
-    })
-    jaeger = object({
-      enabled = bool
-    })
-    sentry = object({
-      enabled = bool
-    })
-    jenkinsx = object({
-      enabled = bool
-    })
   })
   description = "Resources as JSON (see README.md). You can read values from a YAML file with yamldecode()."
 }
