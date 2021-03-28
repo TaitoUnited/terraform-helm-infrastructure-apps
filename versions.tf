@@ -15,12 +15,10 @@
  */
 
 terraform {
-  experiments = [module_variable_optional_attrs]
-
-  required_version = ">= 0.14"
   required_providers {
     external = {
       source = "hashicorp/external"
+      version = "=2.1.0"
     }
     helm = {
       source = "hashicorp/helm"
@@ -28,6 +26,10 @@ terraform {
     }
     null = {
       source = "hashicorp/null"
+      version = "=3.1.0"
     }
   }
+
+  required_version = ">= 0.14"
+  experiments = [module_variable_optional_attrs]
 }
