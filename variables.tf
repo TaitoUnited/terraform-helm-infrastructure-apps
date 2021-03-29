@@ -47,7 +47,7 @@ variable "email" {
 
 variable "resources" {
   type = object({
-    ingressNginxControllers = list(object({
+    ingressNginxControllers = optional(list(object({
       name = string
       class = string
       replicas = number
@@ -56,10 +56,10 @@ variable "resources" {
       configMap = map(string)
       tcpServices = map(string)
       udpServices = map(string)
-    }))
-    certManager = object({
+    })))
+    certManager = optional(object({
       enabled = bool
-    })
+    }))
   })
   description = "Resources as JSON (see README.md). You can read values from a YAML file with yamldecode()."
 }
