@@ -1,15 +1,16 @@
 # Helm infrastructure apps for Kubernetes
 
-Provides some useful infrastructure applications for Kubernetes: [NGINX ingress](https://kubernetes.github.io/ingress-nginx/), [cert-manager](https://cert-manager.io/), [Falco](https://falco.org/), [Jaeger](https://www.jaegertracing.io/), [Sentry](https://sentry.io), [Jenkins X](https://jenkins-x.io/), [Istio](https://istio.io/), and [Knative](https://knative.dev/).
+Provides some useful infrastructure applications for Kubernetes:
 
-NOTE: Currently only NGINX ingress and cert-manager has been implemented.
+- [NGINX ingress](https://kubernetes.github.io/ingress-nginx/)
+- [cert-manager](https://cert-manager.io/)
 
 This module is used by the following modules:
 
-- [Kubernetes infrastructure for AWS](https://registry.terraform.io/modules/TaitoUnited/kubernetes-infrastructure/aws)
-- [Kubernetes infrastructure for Azure](https://registry.terraform.io/modules/TaitoUnited/kubernetes-infrastructure/azurerm)
-- [Kubernetes infrastructure for Google](https://registry.terraform.io/modules/TaitoUnited/kubernetes-infrastructure/google)
-- [Kubernetes infrastructure for DigitalOcean](https://registry.terraform.io/modules/TaitoUnited/kubernetes-infrastructure/digitalocean)
+- [Kubernetes for AWS](https://registry.terraform.io/modules/TaitoUnited/kubernetes/aws)
+- [Kubernetes for Azure](https://registry.terraform.io/modules/TaitoUnited/kubernetes/azurerm)
+- [Kubernetes for Google](https://registry.terraform.io/modules/TaitoUnited/kubernetes/google)
+- [Kubernetes for DigitalOcean](https://registry.terraform.io/modules/TaitoUnited/kubernetes/digitalocean)
 
 Example usage:
 
@@ -32,6 +33,10 @@ module "helm_apps" {
 Example YAML for resources:
 
 ```
+# Certificate managers
+certManager:
+  enabled: false
+
 # Ingress controllers
 ingressNginxControllers:
   - name: ingress-nginx
@@ -78,10 +83,6 @@ ingressNginxControllers:
       block-cidrs:
       block-user-agents:
       block-referers:
-
-# Certificate managers
-certManager:
-  enabled: false
 ```
 
 Contributions are welcome!
