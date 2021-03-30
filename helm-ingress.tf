@@ -52,7 +52,7 @@ resource "helm_release" "ingress_nginx" {
     file("${path.module}/helm-ingress.yaml"),
     jsonencode({
       controller = {
-        config = local.ingressNginxConfigMaps[each.key]
+        config = local.ingressNginxConfigMaps[each.value.name]
       }
     })
   ]
