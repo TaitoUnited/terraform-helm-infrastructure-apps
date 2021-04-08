@@ -53,7 +53,7 @@ variable "resources" {
       replicas = number
       metricsEnabled = optional(bool)
       maxmindLicenseKey = optional(string)
-      configMap = map(string)
+      configMap = optional(map(string))
       tcpServices = map(string)
       udpServices = map(string)
     })))
