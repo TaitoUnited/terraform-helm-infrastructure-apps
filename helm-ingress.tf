@@ -181,6 +181,7 @@ resource "helm_release" "letsencrypt_issuer" {
   name       = "letsencrypt-issuer"
   namespace  = "letsencrypt-issuer"
   chart      = "${path.module}/letsencrypt-issuer"
+  create_namespace = true
 
   set {
     name     = "email"
