@@ -136,32 +136,8 @@ resource "helm_release" "ingress_nginx" {
   }
 }
 
-resource "helm_release" "cert_manager_crd" {
-  depends_on = [helm_release.ingress_nginx]
-
-  count      = local.certManager.enabled ? 1 : 0
-
-  name       = "cert-manager-crd"
-  namespace  = "cert-manager"
-  chart      = "${path.module}/cert-manager-crd"
-  create_namespace = true
-}
-
-resource "null_resource" "cert_manager_crd_wait" {
-  depends_on = [helm_release.cert_manager_crd]
-
-  triggers = {
-    cert_manager_enabled = local.certManager.enabled
-    cert_manager_version = var.cert_manager_version
-  }
-
-  provisioner "local-exec" {
-    command = "sleep 30"
-  }
-}
-
 resource "helm_release" "cert_manager" {
-  depends_on = [null_resource.cert_manager_crd_wait]
+  depends_on = [helm_release.ingress_nginx]
 
   count      = local.certManager.enabled ? 1 : 0
 
@@ -188,6 +164,11 @@ resource "helm_release" "cert_manager" {
 
   set {
     name     = "serviceAccount.create"
+    value    = "true"
+  }
+
+  set {
+    name     = "installCRDs"
     value    = "true"
   }
 }
