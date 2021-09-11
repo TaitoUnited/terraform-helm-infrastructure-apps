@@ -179,7 +179,7 @@ resource "helm_release" "letsencrypt_issuer" {
   count      = local.certManager.enabled ? 1 : 0
 
   name       = "letsencrypt-issuer"
-  namespace  = "cert-manager"
+  namespace  = "letsencrypt-issuer"
   chart      = "${path.module}/letsencrypt-issuer"
 
   set {
