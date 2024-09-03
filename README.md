@@ -17,7 +17,7 @@ Example usage:
 ```
 module "helm_apps" {
   source                      = "TaitoUnited/infrastructure-apps/helm"
-  version                     = "2.1.2"
+  version                     = "2.6.0"
 
   generate_ingress_dhparam    = false
   pod_security_policy_enabled = true

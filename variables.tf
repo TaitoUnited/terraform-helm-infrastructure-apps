@@ -16,12 +16,12 @@
 
 variable "ingress_nginx_version" {
   type        = string
-  default     = "4.0.19"
+  default     = "4.11.2"
 }
 
 variable "cert_manager_version" {
   type        = string
-  default     = "1.8.0"
+  default     = "1.15.3"
 }
 
 variable "generate_ingress_dhparam" {
