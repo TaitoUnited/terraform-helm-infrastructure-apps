@@ -58,11 +58,6 @@ resource "helm_release" "ingress_nginx" {
   ]
 
   set {
-    name     = "podSecurityPolicy.enabled"
-    value    = var.pod_security_policy_enabled
-  }
-
-  set {
     name     = "rbac.create"
     value    = "true"
   }
@@ -151,11 +146,6 @@ resource "helm_release" "cert_manager" {
   set {
     name     = "global.rbac.create"
     value    = "true"
-  }
-
-  set {
-    name     = "global.podSecurityPolicy.enabled"
-    value    = var.pod_security_policy_enabled
   }
 
   set {

@@ -29,11 +29,6 @@ variable "generate_ingress_dhparam" {
   description = "Generate Diffie-Hellman key for ingress"
 }
 
-variable "pod_security_policy_enabled" {
-  type        = bool
-  description = "True if pod security policy is enabled in Kubernetes cluster"
-}
-
 variable "ingressNginxLoadBalancerIPs" {
   type        = list(string)
   default     = []

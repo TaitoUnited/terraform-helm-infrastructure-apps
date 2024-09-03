@@ -20,7 +20,6 @@ module "helm_apps" {
   version                     = "2.6.0"
 
   generate_ingress_dhparam    = false
-  pod_security_policy_enabled = true
   ingressNginxLoadBalancerIPs = [
     "123.123.123.1", "123.123.123.2", "123.123.123.3"
   ]
