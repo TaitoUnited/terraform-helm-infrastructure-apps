@@ -19,10 +19,13 @@ module "helm_apps" {
   source                      = "TaitoUnited/infrastructure-apps/helm"
   version                     = "2.6.0"
 
+  ingressNginxLoadBalancerIPsByName = {
+    nginx1 = "123.123.123.1"
+    nginx2 = "123.123.123.2"
+    nginx3 = "123.123.123.3"
+  }
+
   generate_ingress_dhparam    = false
-  ingressNginxLoadBalancerIPs = [
-    "123.123.123.1", "123.123.123.2", "123.123.123.3"
-  ]
   email                       = "devops@mydomain.com"
 
   resources                   = yamldecode(file("${path.root}/../my-kube.yaml"))

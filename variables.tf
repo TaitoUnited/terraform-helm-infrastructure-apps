@@ -29,10 +29,10 @@ variable "generate_ingress_dhparam" {
   description = "Generate Diffie-Hellman key for ingress"
 }
 
-variable "ingressNginxLoadBalancerIPs" {
-  type        = list(string)
-  default     = []
-  description = "(Optional) NGINX ingress load balancer IP addresses"
+variable "ingressNginxLoadBalancerIPsByName" {
+  type        = map(string)
+  default     = {}
+  description = "(Optional) Map of NGINX ingress load balancer IP addresses. Key is ingress nginx controller name and value the IP address."
 }
 
 variable "email" {

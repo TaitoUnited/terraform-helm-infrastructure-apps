@@ -85,7 +85,7 @@ resource "helm_release" "ingress_nginx" {
   set {
     name     = "controller.service.loadBalancerIP"
     type     = "string"
-    value    = length(var.ingressNginxLoadBalancerIPs) > 0 ? var.ingressNginxLoadBalancerIPs[each.key] : ""
+    value    = length(values(var.ingressNginxLoadBalancerIPsByName)) > 0 ? var.ingressNginxLoadBalancerIPsByName[each.key] : ""
   }
 
   set {
