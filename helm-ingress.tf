@@ -68,6 +68,12 @@ resource "helm_release" "ingress_nginx" {
   }
 
   set {
+    name     = "controller.allowSnippetAnnotations"
+    /* TODO: make configurable */
+    value    = "true"
+  }
+
+  set {
     name     = "controller.ingressClass"
     value    = each.value.class
   }
