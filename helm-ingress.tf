@@ -67,10 +67,17 @@ resource "helm_release" "ingress_nginx" {
     value    = "true"
   }
 
+  /* TODO: make configurable and false by default */
   set {
     name     = "controller.allowSnippetAnnotations"
-    /* TODO: make configurable */
     value    = "true"
+  }
+
+  /* TODO: make configurable and Medium by default */
+  set {
+    name     = "controller.config.annotations-risk-level"
+    type     = "string"
+    value    = "Critical"
   }
 
   set {
