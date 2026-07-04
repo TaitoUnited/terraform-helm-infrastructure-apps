@@ -21,7 +21,7 @@ variable "ingress_nginx_version" {
 
 variable "cert_manager_version" {
   type        = string
-  default     = "1.17.1"
+  default     = "1.20.3"
 }
 
 variable "generate_ingress_dhparam" {
