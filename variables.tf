@@ -16,7 +16,7 @@
 
 variable "ingress_nginx_version" {
   type        = string
-  default     = "4.12.1"
+  default     = "4.15.1"
 }
 
 variable "cert_manager_version" {

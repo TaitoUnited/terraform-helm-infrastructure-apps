@@ -27,14 +27,16 @@ resource "helm_release" "nginx_extras" {
   chart      = "${path.module}/nginx-extras"
   create_namespace = true
 
-  dynamic "set_sensitive" {
-    for_each = var.generate_ingress_dhparam == true ? [ 1 ] : []
-    content {
-      name     = "dhparam"
-      type     = "string"
-      value    = data.external.dhparam[each.key].result.key
-    }
-  }
+  set_sensitive = concat(
+    [],
+    var.generate_ingress_dhparam ? [
+      {
+        name  = "dhparam"
+        type  = "string"
+        value = data.external.dhparam[each.key].result.key
+      }
+    ] : []
+  )
 }
 
 resource "helm_release" "ingress_nginx" {
@@ -57,91 +59,82 @@ resource "helm_release" "ingress_nginx" {
     })
   ]
 
-  set {
-    name     = "rbac.create"
-    value    = "true"
-  }
+  set = concat(
+    [
+      {
+        name  = "rbac.create"
+        value = "true"
+      },
+      {
+        name  = "serviceAccount.create"
+        value = "true"
+      },
+      {
+        /* TODO: make configurable and false by default */
+        name  = "controller.allowSnippetAnnotations"
+        value = "true"
+      },
+      {
+        /* TODO: make configurable and Medium by default */
+        name  = "controller.config.annotations-risk-level"
+        type  = "string"
+        value = "Critical"
+      },
+      {
+        name  = "controller.ingressClass"
+        value = each.value.class
+      },
+      {
+        name  = "controller.replicaCount"
+        value = each.value.replicas
+      },
+      {
+        name  = "controller.maxmindLicenseKey"
+        value = each.value.maxmindLicenseKey != null ? each.value.maxmindLicenseKey : ""
+      },
+      {
+        name  = "controller.service.loadBalancerIP"
+        type  = "string"
+        value = length(values(var.ingressNginxLoadBalancerIPsByName)) > 0 ? var.ingressNginxLoadBalancerIPsByName[each.key] : ""
+      },
+      {
+        name  = "controller.service.externalTrafficPolicy"
+        value = "Local"
+      },
+      {
+        name  = "controller.metrics.enabled"
+        type  = "string"
+        value = each.value.metricsEnabled != null ? each.value.metricsEnabled : false
+      },
+      {
+        name  = "controller.config.log-format-escape-json"
+        type  = "string"
+        value = "true"
+      },
+    ],
 
-  set {
-    name     = "serviceAccount.create"
-    value    = "true"
-  }
+    var.generate_ingress_dhparam ? [
+      {
+        name  = "controller.config.ssl-dh-param"
+        type  = "string"
+        value = "${each.value.name}/lb-dhparam"
+      }
+    ] : [],
 
-  /* TODO: make configurable and false by default */
-  set {
-    name     = "controller.allowSnippetAnnotations"
-    value    = "true"
-  }
+    [
+      for port, service in coalesce(each.value.tcpServices, {}) : {
+        name  = "tcp.${port}"
+        value = service
+      }
+    ],
 
-  /* TODO: make configurable and Medium by default */
-  set {
-    name     = "controller.config.annotations-risk-level"
-    type     = "string"
-    value    = "Critical"
-  }
-
-  set {
-    name     = "controller.ingressClass"
-    value    = each.value.class
-  }
-
-  set {
-    name     = "controller.replicaCount"
-    value    = each.value.replicas
-  }
-
-  set {
-    name     = "controller.maxmindLicenseKey"
-    value    = each.value.maxmindLicenseKey != null ? each.value.maxmindLicenseKey : ""
-  }
-
-  set {
-    name     = "controller.service.loadBalancerIP"
-    type     = "string"
-    value    = length(values(var.ingressNginxLoadBalancerIPsByName)) > 0 ? var.ingressNginxLoadBalancerIPsByName[each.key] : ""
-  }
-
-  set {
-    name     = "controller.service.externalTrafficPolicy"
-    value    = "Local"
-  }
-
-  set {
-    name     = "controller.metrics.enabled"
-    type     = "string"
-    value    = each.value.metricsEnabled != null ? each.value.metricsEnabled : false
-  }
-
-  set {
-    name     = "controller.config.log-format-escape-json"
-    type     = "string"
-    value    = "true"
-  }
-
-  dynamic "set" {
-    for_each = var.generate_ingress_dhparam == true ? [ 1 ] : []
-    content {
-      name     = "controller.config.ssl-dh-param"
-      type     = "string"
-      value    = "${each.value.name}/lb-dhparam"
-    }
-  }
-
-  dynamic "set" {
-    for_each = each.value.tcpServices != null ? each.value.tcpServices : {}
-    content {
-      name   = "tcp.${set.key}"
-      value  = set.value
-    }
-  }
-
-  dynamic "set" {
-    for_each = each.value.udpServices != null ? each.value.udpServices : {}
-    content {
-      name   = "udp.${set.key}"
-      value  = set.value
-    }
-  }
+    [
+      for port, service in coalesce(each.value.udpServices, {}) : {
+        name  = "udp.${port}"
+        value = service
+      }
+    ]
+  )
 }
 
 resource "helm_release" "cert_manager" {
@@ -156,25 +149,24 @@ resource "helm_release" "cert_manager" {
   version    = var.cert_manager_version
   create_namespace = true
 
-  set {
-    name     = "global.rbac.create"
-    value    = "true"
-  }
-
-  set {
-    name     = "securityContext.enabled"
-    value    = "true"
-  }
-
-  set {
-    name     = "serviceAccount.create"
-    value    = "true"
-  }
-
-  set {
-    name     = "installCRDs"
-    value    = "true"
-  }
+  set = [
+    {
+      name     = "global.rbac.create"
+      value    = "true"
+    },
+    {
+      name     = "securityContext.enabled"
+      value    = "true"
+    },
+    {
+      name     = "serviceAccount.create"
+      value    = "true"
+    },
+    {
+      name     = "installCRDs"
+      value    = "true"
+    }
+  ]
 }
 
 resource "helm_release" "letsencrypt_issuer" {
@@ -187,8 +179,10 @@ resource "helm_release" "letsencrypt_issuer" {
   chart      = "${path.module}/letsencrypt-issuer"
   create_namespace = true
 
-  set {
-    name     = "email"
-    value    = var.email
-  }
+  set = [
+    {
+      name     = "email"
+      value    = var.email
+    }
+  ]
 }

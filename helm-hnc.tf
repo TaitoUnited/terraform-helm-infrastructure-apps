@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 Taito United
+ * Copyright 2024 Taito United
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,21 +14,16 @@
  * limitations under the License.
  */
 
-terraform {
-  required_providers {
-    external = {
-      source = "hashicorp/external"
-      version = ">=2.1.0"
-    }
-    helm = {
-      source = "hashicorp/helm"
-      version = ">=3.0.0"
-    }
-    null = {
-      source = "hashicorp/null"
-      version = ">=3.1.0"
-    }
-  }
+/*
+resource "helm_release" "hnc" {
+  count      = local.hnc.enabled ? 1 : 0
 
-  required_version = ">= 1.15.0"
+  name       = "hnc"
+  namespace  = "hnc-system"
+  repository = "https://gcr.io/k8s-staging-multitenancy" --> TODO: Not available -> publish chart yourself!
+  chart      = "hnc-manager"
+  version    = var.hnc_version
+
+  create_namespace = true
 }
+*/
