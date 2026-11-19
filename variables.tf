@@ -21,7 +21,7 @@ variable "ingress_nginx_version" {
 
 variable "cert_manager_version" {
   type        = string
-  default     = "1.20.3"
+  default     = "1.21.3"
 }
 
 variable "generate_ingress_dhparam" {
@@ -53,7 +53,8 @@ variable "resources" {
       udpServices = map(string)
     })))
     certManager = optional(object({
-      enabled = bool
+      enabled = optional(bool, false)
+      gatewayApiEnabled = optional(bool, false)
     }))
   })
   description = "Resources as JSON (see README.md). You can read values from a YAML file with yamldecode()."
