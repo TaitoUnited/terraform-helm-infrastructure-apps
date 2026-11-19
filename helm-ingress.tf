@@ -15,16 +15,16 @@
  */
 
 data "external" "dhparam" {
-  for_each = {for item in (var.generate_ingress_dhparam == true ? local.ingressNginxControllers : []): item.name => item}
-  program = [ "${path.module}/dhparam.sh", each.key, path.module ]
+  for_each = { for item in(var.generate_ingress_dhparam == true ? local.ingressNginxControllers : []) : item.name => item }
+  program  = ["${path.module}/dhparam.sh", each.key, path.module]
 }
 
 resource "helm_release" "nginx_extras" {
-  for_each   = {for item in local.ingressNginxControllers: item.name => item}
+  for_each = { for item in local.ingressNginxControllers : item.name => item }
 
-  name       = "${each.value.name}-extras"
-  namespace  = each.value.name
-  chart      = "${path.module}/nginx-extras"
+  name             = "${each.value.name}-extras"
+  namespace        = each.value.name
+  chart            = "${path.module}/nginx-extras"
   create_namespace = true
 
   set_sensitive = concat(
@@ -41,7 +41,7 @@ resource "helm_release" "nginx_extras" {
 
 resource "helm_release" "ingress_nginx" {
   depends_on = [helm_release.nginx_extras]
-  for_each   = {for item in local.ingressNginxControllers: item.name => item}
+  for_each   = { for item in local.ingressNginxControllers : item.name => item }
 
   name       = each.value.name
   namespace  = each.value.name
@@ -140,43 +140,43 @@ resource "helm_release" "ingress_nginx" {
 resource "helm_release" "cert_manager" {
   depends_on = [helm_release.ingress_nginx]
 
-  count      = local.certManager.enabled ? 1 : 0
+  count = local.certManager.enabled ? 1 : 0
 
-  name       = "cert-manager"
-  namespace  = "cert-manager"
-  repository = "https://charts.jetstack.io/"
-  chart      = "cert-manager"
-  version    = var.cert_manager_version
+  name             = "cert-manager"
+  namespace        = "cert-manager"
+  repository       = "https://charts.jetstack.io/"
+  chart            = "cert-manager"
+  version          = var.cert_manager_version
   create_namespace = true
 
   set = [
     {
-      name     = "global.rbac.create"
-      value    = "true"
+      name  = "global.rbac.create"
+      value = "true"
     },
     {
-      name     = "securityContext.enabled"
-      value    = "true"
+      name  = "securityContext.enabled"
+      value = "true"
     },
     {
-      name     = "serviceAccount.create"
-      value    = "true"
+      name  = "serviceAccount.create"
+      value = "true"
     },
     {
-      name     = "crds.enabled"
-      value    = "true"
+      name  = "crds.enabled"
+      value = "true"
     },
     {
-      name     = "config.kind"
-      value    = "ControllerConfiguration"
+      name  = "config.kind"
+      value = "ControllerConfiguration"
     },
     {
-      name     = "config.apiVersion"
-      value    = "controller.config.cert-manager.io/v1alpha1"
+      name  = "config.apiVersion"
+      value = "controller.config.cert-manager.io/v1alpha1"
     },
     {
-      name     = "config.gatewayAPI.enabled"
-      value    = local.certManager.gatewayApiEnabled ? "true" : "false"
+      name  = "config.gatewayAPI.enabled"
+      value = local.certManager.gatewayApiEnabled ? "true" : "false"
     }
   ]
 }
@@ -184,17 +184,17 @@ resource "helm_release" "cert_manager" {
 resource "helm_release" "letsencrypt_issuer" {
   depends_on = [helm_release.cert_manager]
 
-  count      = local.certManager.enabled ? 1 : 0
+  count = local.certManager.enabled ? 1 : 0
 
-  name       = "letsencrypt-issuer"
-  namespace  = "letsencrypt-issuer"
-  chart      = "${path.module}/letsencrypt-issuer"
+  name             = "letsencrypt-issuer"
+  namespace        = "letsencrypt-issuer"
+  chart            = "${path.module}/letsencrypt-issuer"
   create_namespace = true
 
   set = [
     {
-      name     = "email"
-      value    = var.email
+      name  = "email"
+      value = var.email
     }
   ]
 }

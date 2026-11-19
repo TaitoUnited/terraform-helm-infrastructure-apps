@@ -18,7 +18,7 @@ locals {
   ingressNginxControllers = coalesce(var.resources.ingressNginxControllers, [])
 
   ingressNginxConfigMaps = {
-    for nginx in local.ingressNginxControllers:
+    for nginx in local.ingressNginxControllers :
     nginx.name => coalesce(nginx.configMap, {})
   }
 

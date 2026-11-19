@@ -15,13 +15,13 @@
  */
 
 variable "ingress_nginx_version" {
-  type        = string
-  default     = "4.15.1"
+  type    = string
+  default = "4.15.1"
 }
 
 variable "cert_manager_version" {
-  type        = string
-  default     = "1.21.3"
+  type    = string
+  default = "1.21.3"
 }
 
 variable "generate_ingress_dhparam" {
@@ -36,24 +36,24 @@ variable "ingressNginxLoadBalancerIPsByName" {
 }
 
 variable "email" {
-  type = string
+  type        = string
   description = "Email address for DevOps support."
 }
 
 variable "resources" {
   type = object({
     ingressNginxControllers = optional(list(object({
-      name = string
-      class = string
-      replicas = number
-      metricsEnabled = optional(bool)
+      name              = string
+      class             = string
+      replicas          = number
+      metricsEnabled    = optional(bool)
       maxmindLicenseKey = optional(string)
-      configMap = optional(map(string))
-      tcpServices = map(string)
-      udpServices = map(string)
+      configMap         = optional(map(string))
+      tcpServices       = map(string)
+      udpServices       = map(string)
     })))
     certManager = optional(object({
-      enabled = optional(bool, false)
+      enabled           = optional(bool, false)
       gatewayApiEnabled = optional(bool, false)
     }))
   })
